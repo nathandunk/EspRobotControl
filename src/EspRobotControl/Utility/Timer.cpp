@@ -1,12 +1,10 @@
 #include "EspRobotControl/Utility/Timer.hpp"
-#include "Arduino.h"
 
 Timer::Timer(float period_, Print &printer_):
     period(period_),
     last_time_micros(0),
     current_time_micros(0),
     start_time_micros(0),
-    printer(&printer_)
 {
     period_micros = period*1000000.0;
 }
@@ -21,19 +19,14 @@ void Timer::start(){
 }
 
 float Timer::wait(){
-    // int timer_in_loop_start_micros = micros();
     bool waiting = true;
     while(waiting){
-        current_time_micros = micros();
+        current_time_micros;
+        gettimeofday(&tv_now, NULL);
+        int64_t current_time_micros = (int64_t)tv_now.tv_sec * 1000000L + (int64_t)tv_now.tv_usec;
         if ((current_time_micros - last_time_micros) > int(period_micros)){
             waiting = false;
-            // printer->print(period_micros);
-            // printer->print(", ");
-            // printer->println(current_time_micros - last_time_micros);
             last_time_micros = current_time_micros;
-        }
-        else{
-            // printer->print("waiting...");
         }
     }
     // int timer_in_loop_stop_micros = micros();
